@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadence — Project & workflow software for fast teams</title>
+<meta name="description" content="Cadence is the project workspace teams actually enjoy. Plan, track and measure work in one fast, calm tool.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--soft:#f7f8fa;--soft2:#f1f3f7;--ink:#0a0e1a;--ink2:#1f2738;
+  --muted:#5a6472;--muted2:#8a93a3;--accent:#047857;--accent2:#059669;--accentsoft:#ecfdf5;
+  --line:#eceeF2;--line2:#e3e6ec;--red:#dc2626;--amber:#d97706;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);--r:14px;
+  --shadow:0 1px 2px rgba(10,14,26,.04),0 12px 30px -16px rgba(10,14,26,.12);
+  --shadowlg:0 30px 70px -28px rgba(10,14,26,.22);
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;overflow-x:hidden;font-size:16px}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit}
+::selection{background:var(--accentsoft);color:var(--accent)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.mono{font-variant-numeric:tabular-nums}
+.accent{color:var(--accent)}
+h1,h2,h3{letter-spacing:-.025em;line-height:1.1}
+
+/* NAV */
+header{position:fixed;top:0;left:0;width:100%;z-index:900;transition:.3s;padding:16px 0}
+header.scrolled{background:rgba(255,255,255,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:11px 0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:30px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:1.18rem;letter-spacing:-.02em}
+.lm{width:30px;height:30px;border-radius:9px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center}
+.lm svg{width:16px;height:16px}
+.nav-links{display:flex;gap:30px}
+.nav-links a{font-size:.93rem;font-weight:500;color:var(--ink2);transition:.2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-cta{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:.92rem;padding:10px 18px;border-radius:10px;transition:.2s;white-space:nowrap}
+.btn-ghost{color:var(--ink2)}.btn-ghost:hover{background:var(--soft)}
+.btn-primary{background:var(--ink);color:#fff}.btn-primary:hover{background:var(--accent)}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent2)}
+.btn-lg{padding:14px 26px;font-size:1rem;border-radius:11px}
+.btn-outline{border:1px solid var(--line2);color:var(--ink)}.btn-outline:hover{border-color:var(--ink);background:var(--soft)}
+.burger{display:none;flex-direction:column;gap:5px;width:26px}.burger span{height:2px;width:100%;background:var(--ink);border-radius:2px}
+.mobile-menu{position:fixed;inset:0;background:#fff;z-index:899;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:24px;transform:translateX(100%);transition:transform .5s var(--ease)}
+.mobile-menu.open{transform:none}.mobile-menu a{font-size:1.5rem;font-weight:600}
+
+.spa-page{display:none}.spa-page.active{display:block;animation:pg .5s var(--ease)}
+@keyframes pg{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* HERO */
+.hero{position:relative;padding:140px 0 60px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accentsoft);border:1px solid #d1fae5;color:var(--accent);font-size:.78rem;font-weight:600;padding:5px 13px;border-radius:999px;margin-bottom:22px}
+.eyebrow .d{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.hero h1{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:700;margin-bottom:20px}
+.hero p.lead{font-size:1.16rem;color:var(--muted);max-width:50ch;margin-bottom:30px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero-note{margin-top:18px;font-size:.85rem;color:var(--muted2);display:flex;gap:18px;flex-wrap:wrap}
+.hero-note b{color:var(--ink2);font-weight:600}
+
+/* product frame */
+.frame{background:#fff;border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadowlg);overflow:hidden}
+.frame-bar{display:flex;align-items:center;gap:6px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--soft)}
+.frame-bar i{width:10px;height:10px;border-radius:50%;background:#dde1e8}.frame-bar i:nth-child(1){background:#ff5f57}.frame-bar i:nth-child(2){background:#febc2e}.frame-bar i:nth-child(3){background:#28c840}
+.frame-bar .u{margin-left:auto;font-size:.68rem;color:var(--muted2)}
+.frame-body{display:grid;grid-template-columns:120px 1fr;min-height:330px}
+.fside{background:var(--ink);padding:14px 11px;display:flex;flex-direction:column;gap:6px}
+.fside .si{height:28px;border-radius:7px;display:flex;align-items:center;gap:7px;padding:0 8px;font-size:.7rem;color:rgba(255,255,255,.6)}
+.fside .si.on{background:rgba(255,255,255,.1);color:#fff}
+.fside .si i{width:12px;height:12px;border-radius:4px;background:rgba(255,255,255,.25)}
+.fmain{padding:16px;display:flex;flex-direction:column;gap:12px}
+.fcards{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.fc{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:11px}
+.fc .k{font-size:.58rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.fc .v{font-size:1.1rem;font-weight:700;margin-top:2px}
+.fc .ud{font-size:.58rem;font-weight:700;color:var(--accent)}
+.fchart{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;flex:1}
+.fchart .ct{font-size:.64rem;color:var(--muted);font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between}
+.fbars{display:flex;align-items:flex-end;gap:5px;height:90px}
+.fbars .bar{flex:1;border-radius:4px 4px 0 0;background:var(--accent);height:30%;animation:fb 2.4s var(--ease) infinite}
+.fbars .bar:nth-child(2){animation-delay:.1s}.fbars .bar:nth-child(3){animation-delay:.2s}.fbars .bar:nth-child(4){animation-delay:.3s}.fbars .bar:nth-child(5){animation-delay:.4s}.fbars .bar:nth-child(6){animation-delay:.5s}.fbars .bar:nth-child(7){animation-delay:.6s}
+@keyframes fb{0%,100%{height:24%}50%{height:88%}}
+
+/* SECTIONS */
+.sec{padding:96px 0}
+.sec-soft{background:var(--soft)}
+.sec-head{max-width:680px;margin:0 auto 56px;text-align:center}
+.sec-head .eyebrow{margin-bottom:16px}
+.sec-head h2{font-size:clamp(1.9rem,3.6vw,2.8rem);font-weight:700;margin-bottom:14px}
+.sec-head p{font-size:1.08rem;color:var(--muted)}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}
+
+/* logos */
+.logos{padding:30px 0 0;text-align:center}
+.logos p{font-size:.78rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:22px}
+.logo-row{display:flex;justify-content:center;align-items:center;gap:clamp(22px,4vw,48px);flex-wrap:wrap;opacity:.6}
+.logo-row span{font-weight:700;font-size:1.2rem;letter-spacing:-.02em;color:var(--ink2)}
+
+/* alternating features */
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:96px}
+.feat:last-child{margin-bottom:0}
+.feat.rev .feat-visual{order:2}
+.feat-txt .eyebrow{margin-bottom:16px}
+.feat-txt h3{font-size:clamp(1.7rem,3vw,2.3rem);font-weight:700;margin-bottom:16px}
+.feat-txt p{color:var(--muted);font-size:1.05rem;margin-bottom:24px}
+.feat-list{list-style:none}
+.feat-list li{display:flex;gap:12px;padding:10px 0;font-size:.96rem;color:var(--ink2)}
+.feat-list .ck{width:22px;height:22px;border-radius:7px;background:var(--accentsoft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.feat-list .ck svg{width:13px;height:13px;stroke-width:3}
+.feat-visual{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+.fv-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fv-row .ln{height:8px;border-radius:5px;background:var(--line2);flex:1}.fv-row .ln.a{background:var(--accent);flex:2}
+
+/* use cases */
+.use-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.use{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px 22px;transition:.25s}
+.use:hover{border-color:var(--line2);box-shadow:var(--shadow);transform:translateY(-2px)}
+.use .ic{width:38px;height:38px;border-radius:10px;background:var(--accentsoft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.use .ic svg{width:19px;height:19px}
+.use b{font-size:1.02rem;font-weight:600;display:block;margin-bottom:5px}
+.use p{font-size:.86rem;color:var(--muted)}
+
+/* customer story */
+.story{background:var(--ink);color:#fff;border-radius:24px;padding:clamp(34px,5vw,64px);display:grid;grid-template-columns:1.3fr 1fr;gap:50px;align-items:center}
+.story .q{font-size:clamp(1.3rem,2.6vw,1.9rem);font-weight:600;line-height:1.35;letter-spacing:-.02em;margin-bottom:26px}
+.story .who{display:flex;align-items:center;gap:13px}
+.story .av{width:46px;height:46px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700}
+.story .who b{display:block;font-weight:600}.story .who span{color:rgba(255,255,255,.65);font-size:.86rem}
+.story-stats{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.story-stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px}
+.story-stat b{display:block;font-size:2rem;font-weight:700;color:#fff;line-height:1}
+.story-stat span{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:6px;display:block}
+
+/* stats band */
+.stats-band{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.stat b{font-size:clamp(2rem,3.6vw,2.8rem);font-weight:700;color:var(--accent);display:block;line-height:1}
+.stat span{font-size:.82rem;color:var(--muted);margin-top:8px;display:block}
+
+/* security */
+.sec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.sec-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:28px}
+.sec-card .ic{width:40px;height:40px;border-radius:10px;background:var(--accentsoft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.sec-card .ic svg{width:20px;height:20px}
+.sec-card b{font-size:1.05rem;font-weight:600;display:block;margin-bottom:6px}
+.sec-card p{color:var(--muted);font-size:.9rem}
+.badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:36px}
+.badge{border:1px solid var(--line2);border-radius:8px;padding:10px 16px;font-size:.78rem;font-weight:600;color:var(--muted);background:#fff}
+
+/* pricing */
+.price-toggle{display:flex;align-items:center;justify-content:center;gap:13px;margin:22px 0 40px}
+.price-toggle span{font-weight:600;color:var(--muted)}.price-toggle span.on{color:var(--ink)}
+.price-toggle .tg{width:48px;height:27px;border-radius:999px;background:var(--line2);position:relative;cursor:pointer;transition:.3s}
+.price-toggle .tg::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 2px 5px rgba(0,0,0,.15)}
+.price-toggle.ann .tg{background:var(--accent)}.price-toggle.ann .tg::after{left:24px}
+.save{font-size:.68rem;font-weight:700;color:var(--accent);background:var(--accentsoft);padding:3px 9px;border-radius:999px}
+.prices{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.plan{background:#fff;border:1px solid var(--line);border-radius:16px;padding:32px 28px;display:flex;flex-direction:column;transition:.25s}
+.plan:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+.plan.feat{border:2px solid var(--accent);position:relative}
+.plan.feat::before{content:"Most popular";position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:.68rem;font-weight:700;padding:5px 14px;border-radius:999px}
+.plan h3{font-size:1.15rem;font-weight:600;margin-bottom:5px}
+.plan .desc{color:var(--muted);font-size:.88rem;margin-bottom:18px;min-height:38px}
+.plan .amt{font-size:2.6rem;font-weight:700;letter-spacing:-.03em}
+.plan .amt small{font-size:.9rem;font-weight:500;color:var(--muted)}
+.plan .per{color:var(--muted);font-size:.82rem;margin-bottom:20px}
+.plan ul{list-style:none;margin-bottom:22px;flex:1}
+.plan ul li{display:flex;gap:10px;padding:7px 0;font-size:.9rem;color:var(--ink2)}
+.plan ul li svg{width:16px;height:16px;color:var(--accent);flex-shrink:0;stroke-width:2.5}
+.plan .btn{width:100%;justify-content:center}
+.compare{width:100%;border-collapse:collapse;margin-top:50px;font-size:.9rem}
+.compare th,.compare td{padding:14px 12px;border-bottom:1px solid var(--line);text-align:center}
+.compare th:first-child,.compare td:first-child{text-align:left;font-weight:600}
+.compare th{color:var(--muted);font-weight:600;font-size:.82rem}
+.compare .yes{color:var(--accent);font-weight:700}
+
+/* faq */
+.faq-list{max-width:720px;margin:0 auto}
+.faq-item{border:1px solid var(--line);border-radius:12px;margin-bottom:11px;overflow:hidden;background:#fff}
+.faq-h{width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 20px;font-weight:600;text-align:left;font-size:.98rem;gap:14px}
+.faq-h .pm{transition:.3s;color:var(--accent);font-size:1.2rem;flex-shrink:0}
+.faq-item.open .pm{transform:rotate(45deg)}
+.faq-b{max-height:0;overflow:hidden;transition:max-height .4s var(--ease);color:var(--muted)}
+.faq-b div{padding:0 20px 18px;font-size:.94rem}
+
+/* cta */
+.cta-band{background:var(--ink);border-radius:24px;padding:clamp(36px,5vw,72px);text-align:center;color:#fff;position:relative;overflow:hidden}
+.cta-band::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 20%,rgba(5,150,105,.32),transparent 50%),radial-gradient(circle at 82% 80%,rgba(13,148,136,.22),transparent 50%)}
+.cta-band>*{position:relative;z-index:2}
+.cta-band h2{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:700;letter-spacing:-.025em;margin-bottom:14px}
+.cta-band p{color:rgba(255,255,255,.7);margin-bottom:28px;font-size:1.05rem}
+
+/* integrations */
+.int-marq{overflow:hidden;margin-top:34px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.int-track{display:flex;gap:12px;width:max-content;animation:intscroll 32s linear infinite}
+.int-chip{flex:0 0 auto;display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 18px;font-weight:600;color:var(--ink2);font-size:.9rem}
+.int-chip .ic{width:24px;height:24px;border-radius:7px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700}
+@keyframes intscroll{to{transform:translateX(-50%)}}
+
+/* contact */
+.contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:46px;align-items:start}
+.form-field{margin-bottom:15px}
+.form-field label{display:block;font-size:.82rem;font-weight:600;margin-bottom:6px;color:var(--ink2)}
+.form-field input,.form-field textarea,.form-field select{width:100%;border:1px solid var(--line2);border-radius:11px;padding:12px 14px;font-size:.96rem;outline:none;transition:.2s;background:#fff;color:var(--ink)}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(4,120,87,.1)}
+.form-field textarea{resize:vertical;min-height:118px}
+.contact-info{background:var(--ink);color:#fff;border-radius:18px;padding:34px}
+.contact-info h3{font-size:1.3rem;font-weight:600;margin-bottom:18px}
+.contact-info .ci-row{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:12px;font-size:.9rem}
+.contact-info .ci-row span{color:rgba(255,255,255,.6)}.contact-info .ci-row b{font-weight:600}
+
+.page-head{padding:130px 0 40px;text-align:center}
+.page-head h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;letter-spacing:-.03em;margin-bottom:16px}
+.page-head p{font-size:1.1rem;color:var(--muted);max-width:58ch;margin:0 auto}
+
+/* features page bento */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feature{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:28px;transition:.25s}
+.feature:hover{border-color:var(--line2);box-shadow:var(--shadow)}
+.feature .ic{width:42px;height:42px;border-radius:11px;background:var(--accentsoft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:15px}
+.feature .ic svg{width:21px;height:21px}
+.feature h3{font-size:1.15rem;font-weight:600;margin-bottom:7px}
+.feature p{color:var(--muted);font-size:.92rem}
+.feature.big{grid-column:span 2}
+
+/* about */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center}
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
+.value{padding:26px;border:1px solid var(--line);border-radius:14px}
+.value .ic{width:38px;height:38px;border-radius:10px;background:var(--accentsoft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:13px}
+.value .ic svg{width:19px;height:19px}
+.value b{display:block;font-size:1.08rem;font-weight:600;margin-bottom:6px}
+.value p{color:var(--muted);font-size:.9rem}
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.team-card{text-align:center}
+.team-av{width:76px;height:76px;border-radius:50%;margin:0 auto 12px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700}
+.team-card b{display:block;font-weight:600}.team-card span{color:var(--muted);font-size:.84rem}
+
+footer{background:var(--ink);color:#fff;padding:66px 0 28px;margin-top:0}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:38px;margin-bottom:44px}
+.foot-brand{font-weight:700;font-size:1.2rem;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.foot-brand .lm{background:#fff;color:var(--ink)}
+.foot-brand+p{color:rgba(255,255,255,.6);max-width:30ch;font-size:.9rem}
+.foot-col h6{font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:15px;font-weight:700}
+.foot-col a{display:block;color:#c7cbe0;font-size:.9rem;margin-bottom:10px;transition:.2s}.foot-col a:hover{color:#fff}
+.foot-bot{display:flex;justify-content:space-between;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:.82rem;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:12px}
+
+.back-top{position:fixed;right:20px;bottom:20px;width:44px;height:44px;border-radius:12px;background:var(--ink);color:#fff;z-index:800;display:flex;align-items:center;justify-content:center;font-size:1.1rem;opacity:0;visibility:hidden;transition:.3s;box-shadow:var(--shadow)}
+.back-top.show{opacity:1;visibility:visible}.back-top:hover{background:var(--accent)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,160%);background:var(--ink);color:#fff;padding:13px 22px;border-radius:11px;z-index:9998;font-size:.88rem;font-weight:600;box-shadow:var(--shadowlg);transition:transform .5s var(--ease);display:flex;align-items:center;gap:9px}
+.toast.show{transform:translate(-50%,0)}.toast svg{width:15px;height:15px;color:var(--accent2)}
+
+@media(max-width:900px){.nav-links{display:none}.burger{display:flex}.hero-grid,.feat,.feat.rev .feat-visual,.story,.story-grid,.contact-grid{grid-template-columns:1fr}.feat.rev .feat-visual{order:0}.use-grid{grid-template-columns:1fr 1fr}.bento{grid-template-columns:1fr 1fr}.feature.big{grid-column:span 2}.prices{grid-template-columns:1fr;max-width:420px;margin:0 auto}.stats-band{grid-template-columns:1fr 1fr}.sec-grid,.values,.team-grid,.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.use-grid,.bento,.stats-band,.sec-grid,.values,.team-grid,.foot-grid{grid-template-columns:1fr}.frame-body{grid-template-columns:1fr}.fside{display:none}}
+body.dark{--bg:#0a0e1a;--soft:#121826;--soft2:#1a2030;--ink:#e8eaed;--ink2:#b8bdc7;--muted:#7a8290;--muted2:#5a6472;--accent:#10b981;--accent2:#34d399;--accentsoft:rgba(16,185,129,.1);--line:#222838;--line2:#2a3040;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px -16px rgba(0,0,0,.4);--shadowlg:0 30px 70px -28px rgba(0,0,0,.5)}
+body.dark .frame-bar,body.dark .fc,body.dark .fchart{background:var(--soft2)}
+body.dark .faq-item,body.dark .feature,body.dark .plan,body.dark .use,body.dark .sec-card,body.dark .badge,body.dark .int-chip{background:var(--soft)}
+body.dark .contact-info{background:var(--soft2)}
+body.dark footer{background:#060810}
+body.dark .cta-band{background:var(--soft2)}
+body.dark .story{background:var(--soft2)}
+.theme-btn:hover{border-color:var(--ink)!important;color:var(--ink)!important}
+body.dark header.scrolled{background:rgba(10,14,26,.88)!important;border-bottom:1px solid var(--line)!important}
+body.dark .theme-btn .moon{display:none!important}body.dark .theme-btn .sun{display:block!important}
+
+.auth-modal{position:fixed;inset:0;background:rgba(10,14,26,.65);z-index:10005;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:.3s;padding:24px;backdrop-filter:blur(4px)}
+.auth-modal.open{opacity:1;visibility:visible}
+.auth-card2{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:38px;max-width:370px;width:100%;position:relative;box-shadow:var(--shadowlg)}
+.auth-close{position:absolute;top:14px;right:18px;font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.auth-logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.15rem;margin-bottom:18px}
+.auth-tabs{display:flex;gap:5px;margin-bottom:16px;background:var(--soft);border-radius:9px;padding:4px}
+.auth-tabs .at{flex:1;padding:8px;border-radius:6px;font-weight:600;font-size:.84rem;color:var(--muted);transition:.2s}
+.auth-tabs .at.on{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.auth-card2 input{width:100%;padding:11px 13px;border:1px solid var(--line2);border-radius:10px;font-size:.95rem;margin-bottom:9px;outline:none;background:var(--bg);color:var(--ink);transition:.2s}
+.auth-card2 input:focus{border-color:var(--accent)}
+
+/* LEGAL */
+.legal{max-width:760px;margin:0 auto;padding:140px 0 80px}
+.legal h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
+.legal .upd{font-size:.82rem;color:var(--muted2);margin-bottom:30px}
+.legal h2{font-size:1.15rem;font-weight:600;margin:28px 0 8px}
+.legal p{font-size:.94rem;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.legal ul{padding-left:20px;margin-bottom:12px}.legal li{font-size:.94rem;color:var(--muted);line-height:1.7;margin-bottom:4px}
+.legal a{color:var(--accent);text-decoration:underline}
+/* CHECKOUT */
+.co-modal{position:fixed;inset:0;background:rgba(10,14,26,.6);z-index:10006;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:.3s;backdrop-filter:blur(4px)}
+.co-modal.open{opacity:1;visibility:visible}
+.co-card{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:36px;max-width:420px;width:100%;position:relative;box-shadow:var(--shadowlg);transform:translateY(10px);transition:.3s}
+.co-modal.open .co-card{transform:none}
+.co-close{position:absolute;top:14px;right:18px;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2)}
+.co-card h3{font-size:1.3rem;font-weight:700;margin-bottom:16px;letter-spacing:-.02em}
+.co-summary{background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:16px;margin-bottom:18px}
+.co-summary .sr{display:flex;justify-content:space-between;padding:5px 0;font-size:.88rem}
+.co-summary .sr span{color:var(--muted)}.co-summary .sr b{font-weight:600}
+.co-card label{display:block;font-size:.74rem;font-weight:600;margin-bottom:5px;color:var(--muted)}
+.co-card input{width:100%;padding:11px 13px;border:1px solid var(--line2);border-radius:10px;font-size:.95rem;margin-bottom:12px;outline:none;background:#fff;color:var(--ink);transition:.2s}
+.co-card input:focus{border-color:var(--accent)}
+.co-card .co2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.co-card .co2 > div{margin-bottom:0}
+.co-note{text-align:center;font-size:.74rem;color:var(--muted2);margin-top:14px;line-height:1.5}
+.co-success{text-align:center;padding:20px 0}
+.co-success .ck{font-size:2.4rem;margin-bottom:10px}
+.co-success h3{margin-bottom:8px}
+.co-success p{color:var(--muted);font-size:.9rem;margin-bottom:18px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header id="header">
+  <div class="wrap nav">
+    <a class="logo" data-page="home"><span class="lm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2-7 4 14 2-7h3"/></svg></span>Cadence</a>
+    <nav class="nav-links"><a data-page="features">Features</a><a data-page="pricing">Pricing</a><a data-page="about">About</a><a data-page="contact">Contact</a></nav>
+    <div class="nav-cta">
+      <button class="btn btn-ghost" onclick="openAuth()">Sign in</button>
+      <button class="btn btn-primary" data-page="pricing">Start free</button>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme" style="width:36px;height:36px;border-radius:9px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:.2s;margin-right:4px"><svg class="moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button><div class="burger" id="burger"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu"><a data-page="home">Home</a><a data-page="features">Features</a><a data-page="pricing">Pricing</a><a data-page="about">About</a><a data-page="contact">Contact</a></div>
+
+<!-- HOME -->
+<div class="spa-page active" id="page-home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow"><span class="d"></span> New · Cadence AI automations</span>
+        <h1>The project workspace teams <span class="accent">actually enjoy</span>.</h1>
+        <p class="lead">Cadence unifies plans, tasks, goals and analytics in one fast, calm tool — so your team spends less time managing work and more time doing it.</p>
+        <div class="hero-cta">
+          <button class="btn btn-accent btn-lg" data-page="pricing">Start free — no card</button>
+          <button class="btn btn-outline btn-lg" data-page="features">See features</button>
+        </div>
+        <div class="hero-note"><span>✓ 14-day Pro trial</span><span>✓ Free forever plan</span><span>✓ Setup in 5 minutes</span></div>
+      </div>
+      <div>
+        <div class="frame">
+          <div class="frame-bar"><i></i><i></i><i></i><span class="u">app.cadence.io</span></div>
+          <div class="frame-body">
+            <div class="fside">
+              <div class="si on"><i></i>Dashboard</div>
+              <div class="si"><i></i>Projects</div>
+              <div class="si"><i></i>Goals</div>
+              <div class="si"><i></i>Analytics</div>
+              <div class="si"><i></i>Team</div>
+            </div>
+            <div class="fmain">
+              <div class="fcards">
+                <div class="fc"><div class="k">Shipped</div><div class="v mono">128</div><div class="ud">▲ 24%</div></div>
+                <div class="fc"><div class="k">Velocity</div><div class="v mono">96</div><div class="ud">▲ 12%</div></div>
+                <div class="fc"><div class="k">On time</div><div class="v mono">98%</div><div class="ud">▲ 3%</div></div>
+              </div>
+              <div class="fchart"><div class="ct"><span>Throughput · 7 weeks</span><span class="accent">+31</span></div><div class="fbars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="logos"><div class="wrap"><p>Trusted by 12,000+ teams</p><div class="logo-row"><span>Northwind</span><span>Loopbase</span><span>Helio</span><span>Vertex</span><span>Monarch</span><span>Quanta</span></div></div></section>
+
+  <!-- alternating features -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head rv"><span class="eyebrow"><span class="d"></span>One workspace</span><h2>Everything your team needs. Nothing it doesn't.</h2><p>Cadence replaces the tangle of tabs, spreadsheets and status meetings with a single source of truth.</p></div>
+
+      <div class="feat rv">
+        <div class="feat-txt">
+          <span class="eyebrow"><span class="d"></span>Plan</span>
+          <h3>Plan quarters in minutes, not meetings.</h3>
+          <p>Turn ambitious goals into clear, owned work. Cadence auto-balances capacity and surfaces blockers before they cost you a sprint.</p>
+          <ul class="feat-list">
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Auto roadmaps</b> — generate a quarter plan from your goals in one click.</div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Capacity planning</b> — see who has room and who is underwater, live.</div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Blocker detection</b> — AI flags stuck work and suggests next steps.</div></li>
+          </ul>
+        </div>
+        <div class="feat-visual">
+          <div class="fv-row"><b class="mono" style="font-size:.7rem;color:var(--muted);width:70px">Q3 Launch</b><div class="ln a"></div><b class="mono" style="font-size:.7rem;color:var(--accent)">88%</b></div>
+          <div class="fv-row"><b class="mono" style="font-size:.7rem;color:var(--muted);width:70px">Mobile</b><div class="ln"></div><b class="mono" style="font-size:.7rem;color:var(--muted)">64%</b></div>
+          <div class="fv-row"><b class="mono" style="font-size:.7rem;color:var(--muted);width:70px">Migration</b><div class="ln"></div><b class="mono" style="font-size:.7rem;color:var(--muted)">40%</b></div>
+          <div class="fv-row"><b class="mono" style="font-size:.7rem;color:var(--muted);width:70px">Design</b><div class="ln"></div><b class="mono" style="font-size:.7rem;color:var(--muted)">72%</b></div>
+        </div>
+      </div>
+
+      <div class="feat rev rv d1">
+        <div class="feat-txt">
+          <span class="eyebrow"><span class="d"></span>Track</span>
+          <h3>Track work that actually moves.</h3>
+          <p>Boards, lists, timelines and calendars — all views of the same truth. Drag, update, done.</p>
+          <ul class="feat-list">
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Every view</b> — Kanban, list, Gantt and calendar, instantly switchable.</div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Custom workflows</b> — model your process exactly.</div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Real-time</b> — changes appear for everyone the instant they happen.</div></li>
+          </ul>
+        </div>
+        <div class="feat-visual">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px">
+            <div style="background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px"><div style="font-size:.58rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:6px">To do</div><div style="background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:7px;font-size:.66rem;margin-bottom:5px">Auth refresh</div><div style="background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:7px;font-size:.66rem">Billing v2</div></div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px"><div style="font-size:.58rem;color:var(--accent);font-weight:700;text-transform:uppercase;margin-bottom:6px">Doing</div><div style="background:var(--accentsoft);border:1px solid #d1fae5;border-radius:6px;padding:7px;font-size:.66px;font-size:.66rem">Dashboard</div></div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px"><div style="font-size:.58rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:6px">Done</div><div style="background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:7px;font-size:.66rem">Onboarding</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat rv d2">
+        <div class="feat-txt">
+          <span class="eyebrow"><span class="d"></span>Measure</span>
+          <h3>Numbers that drive decisions.</h3>
+          <p>Stop guessing. Cadence turns activity into the metrics leaders use — cycle time, throughput, predictability.</p>
+          <ul class="feat-list">
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Custom reports</b> — build any view without a data team.</div></li>
+            <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><b>Forecasting</b> — know if you'll hit the date before it's too late.</div></li>
+          </ul>
+        </div>
+        <div class="feat-visual">
+          <div class="fcards" style="grid-template-columns:1fr 1fr 1fr">
+            <div class="fc"><div class="k">Cycle</div><div class="v mono">2.4d</div><div class="ud">▼ 18%</div></div>
+            <div class="fc"><div class="k">Throughput</div><div class="v mono">+31</div><div class="ud">▲ 9%</div></div>
+            <div class="fc"><div class="k">NPS</div><div class="v mono">72</div><div class="ud">▲ 5</div></div>
+          </div>
+          <div class="fchart" style="flex:none;margin-top:9px"><div class="ct"><span>Weekly</span><span class="accent">+31</span></div><div class="fbars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- use cases -->
+  <section class="sec sec-soft">
+    <div class="wrap">
+      <div class="sec-head rv"><span class="eyebrow"><span class="d"></span>Built for every team</span><h2>One tool, every department.</h2><p>From engineering roadmaps to marketing campaigns — Cadence adapts to how each team works.</p></div>
+      <div class="use-grid">
+        <div class="use rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><b>Engineering</b><p>Sprints, bugs, on-call, deployments.</p></div>
+        <div class="use rv d1"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div><b>Product</b><p>Roadmaps, specs, discovery.</p></div>
+        <div class="use rv d2"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg></div><b>Design</b><p>Design ops, critiques, handoff.</p></div>
+        <div class="use rv d3"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/></svg></div><b>Marketing</b><p>Campaigns, content calendars, launches.</p></div>
+        <div class="use rv d4"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div><b>Operations</b><p>OKRs, processes, cross-team.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- customer story -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="story rv">
+        <div>
+          <span class="eyebrow" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff"><span class="d" style="background:var(--accent2)"></span>Customer story</span>
+          <p class="q" style="margin-top:18px">"We replaced four tools with Cadence and shipped our biggest quarter ever. The team finally has one place that tells the truth about our work."</p>
+          <div class="who"><div class="av">SR</div><div><b>Sade Renner</b><span>VP Engineering, Helio</span></div></div>
+        </div>
+        <div class="story-stats">
+          <div class="story-stat"><b class="mono">4×4</b><span>tools replaced</span></div>
+          <div class="story-stat"><b class="mono">+38%</b><span>ship velocity</span></div>
+          <div class="story-stat"><b class="mono">−12h</b><span>meetings / week</span></div>
+          <div class="story-stat"><b class="mono">2 wks</b><span>to roll out</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- stats -->
+  <section class="sec sec-soft" style="padding:64px 0">
+    <div class="wrap"><div class="stats-band rv">
+      <div class="stat"><b data-count="12000" data-suffix="+">0</b><span>Teams onboard</span></div>
+      <div class="stat"><b data-count="99" data-suffix=".99%">0</b><span>Uptime SLA</span></div>
+      <div class="stat"><b data-count="4" data-suffix=".9★">0</b><span>Avg. rating</span></div>
+      <div class="stat"><b data-count="120" data-suffix="+">0</b><span>Countries</span></div>
+    </div></div>
+  </section>
+
+  <!-- integrations -->
+  <section class="sec" style="padding:64px 0">
+    <div class="wrap">
+      <div class="sec-head rv" style="margin-bottom:8px"><span class="eyebrow"><span class="d"></span>Integrations</span><h2>Connects with your whole stack.</h2><p>Two-way sync with 80+ tools — set up in minutes.</p></div>
+      <div class="int-marq rv"><div class="int-track" id="intTrack"></div></div>
+    </div>
+  </section>
+
+  <!-- security -->
+  <section class="sec sec-soft">
+    <div class="wrap">
+      <div class="sec-head rv"><span class="eyebrow"><span class="d"></span>Security</span><h2>Built for trust, end to end.</h2><p>Enterprise-grade security from day one — because your data is yours.</p></div>
+      <div class="sec-grid">
+        <div class="sec-card rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3z"/></svg></div><b>SOC 2 Type II</b><p>Audited and certified. Encryption in transit and at rest.</p></div>
+        <div class="sec-card rv d1"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><b>SSO &amp; SAML</b><p>Single sign-on, granular roles, and full audit logs.</p></div>
+        <div class="sec-card rv d2"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M9 12l2 2 4-4"/></svg></div><b>Your data, yours</b><p>Export anytime. We never sell or train on your data. GDPR ready.</p></div>
+      </div>
+      <div class="badges rv"><span class="badge">SOC 2</span><span class="badge">GDPR</span><span class="badge">ISO 27001</span><span class="badge">SSO / SAML</span><span class="badge">99.99% uptime</span></div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:0"><div class="wrap"><div class="cta-band rv"><h2>Ready to find your rhythm?</h2><p>Join 12,000+ teams shipping faster with Cadence.</p><button class="btn btn-accent btn-lg" data-page="pricing">Start free today</button></div></div></section>
+</div>
+
+<!-- FEATURES -->
+<div class="spa-page" id="page-features">
+  <section class="page-head"><div class="wrap"><span class="eyebrow rv"><span class="d"></span>Features</span><h1 class="rv">Built for teams that ship.</h1><p class="rv d1">Every feature exists to remove friction between an idea and its delivery.</p></div></section>
+  <section class="sec" style="padding-top:18px"><div class="wrap"><div class="bento">
+    <div class="feature rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div><h3>Live dashboards</h3><p>Role-based views that update in real time.</p></div>
+    <div class="feature rv d1"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><h3>AI automations</h3><p>Auto-route, assign and update work.</p></div>
+    <div class="feature rv d2"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></div><h3>Goals &amp; OKRs</h3><p>Cascade goals to tasks with live progress.</p></div>
+    <div class="feature rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/></svg></div><h3>Analytics</h3><p>Cycle time, throughput, forecasting.</p></div>
+    <div class="feature rv d1"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></div><h3>80+ integrations</h3><p>Two-way sync with your stack.</p></div>
+    <div class="feature rv d2"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Security</h3><p>SOC 2, SSO/SAML, audit logs.</p></div>
+  </div></div></section>
+  <section class="sec" style="padding-top:0"><div class="wrap"><div class="cta-band rv"><h2>See it in action.</h2><p>Book a 20-minute walkthrough.</p><button class="btn btn-accent btn-lg" data-page="contact">Book a demo</button></div></div></section>
+</div>
+
+<!-- PRICING -->
+<div class="spa-page" id="page-pricing">
+  <section class="page-head"><div class="wrap"><span class="eyebrow rv"><span class="d"></span>Pricing</span><h1 class="rv">Pricing that scales with you.</h1><p class="rv d1">Start free, forever. Upgrade when you're ready.</p></div></section>
+  <section class="sec" style="padding-top:8px"><div class="wrap">
+    <div class="price-toggle rv" id="priceToggle2"><span class="on">Monthly</span><div class="tg"></div><span>Annual</span><span class="save">Save 20%</span></div>
+    <div class="prices" id="pricingGrid"></div>
+    <h2 class="rv" style="text-align:center;font-size:clamp(1.5rem,3vw,2rem);font-weight:700;margin:60px 0 8px">Compare plans</h2>
+    <div style="overflow-x:auto"><table class="compare rv">
+      <tr><th>Feature</th><th>Free</th><th>Pro</th><th>Scale</th></tr>
+      <tr><td>Projects</td><td>Up to 3</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Members</td><td>Up to 5</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>Live dashboards</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>AI automations</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Goals &amp; OKRs</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>SSO / SAML</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+      <tr><td>Audit logs</td><td>—</td><td>—</td><td class="yes">✓</td></tr>
+    </table></div>
+    <div class="sec-head rv" style="margin-top:56px"><span class="eyebrow"><span class="d"></span>FAQ</span><h2 style="font-size:clamp(1.6rem,3.2vw,2.3rem)">Questions, answered.</h2></div>
+    <div class="faq-list" id="faqList2"></div>
+  </div></section>
+</div>
+
+<!-- ABOUT -->
+<div class="spa-page" id="page-about">
+  <section class="page-head"><div class="wrap"><span class="eyebrow rv"><span class="d"></span>About</span><h1 class="rv">We're building the work software we always wanted.</h1><p class="rv d1">Cadence began in 2021 when four engineers got tired of spending Mondays in status meetings. Now 60 people, headquartered in Lagos and remote across 14 countries.</p></div></section>
+  <section class="sec" style="padding-top:18px"><div class="wrap">
+    <div class="story-grid rv"><div><h2 style="font-size:clamp(1.7rem,3.2vw,2.3rem);font-weight:700;margin-bottom:14px">Our mission</h2><p style="color:var(--muted);font-size:1.05rem">Give every team a single, honest view of their work — so they spend energy creating, not coordinating. Great software disappears, leaving only the work behind.</p></div>
+      <div class="stats-band" style="grid-template-columns:1fr 1fr;gap:16px;text-align:left">
+        <div class="stat"><b data-count="60">0</b><span>People</span></div>
+        <div class="stat"><b data-count="2021">0</b><span>Founded</span></div>
+        <div class="stat"><b data-count="14">0</b><span>Countries</span></div>
+        <div class="stat"><b data-count="40" data-suffix="M">$0</b><span>Series B raised</span></div>
+      </div></div>
+    <div class="sec-head rv" style="margin:60px auto 24px"><span class="eyebrow"><span class="d"></span>Values</span><h2 style="font-size:clamp(1.7rem,3.2vw,2.3rem)">What we stand for.</h2></div>
+    <div class="values">
+      <div class="value rv"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><b>Speed is a feature</b><p>We obsess over milliseconds.</p></div>
+      <div class="value rv d1"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3z"/></svg></div><b>Default to honest</b><p>One source of truth, no vanity metrics.</p></div>
+      <div class="value rv d2"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><b>Build for humans</b><p>Software should feel calm.</p></div>
+    </div>
+    <div class="sec-head rv" style="margin:60px auto 24px"><span class="eyebrow"><span class="d"></span>Team</span><h2 style="font-size:clamp(1.7rem,3.2vw,2.3rem)">Leadership.</h2></div>
+    <div class="team-grid">
+      <div class="team-card rv"><div class="team-av">EO</div><b>Emeka Obi</b><span>Co-founder &amp; CEO</span></div>
+      <div class="team-card rv d1"><div class="team-av">AK</div><b>Aisha Kanu</b><span>Co-founder &amp; CTO</span></div>
+      <div class="team-card rv d2"><div class="team-av">DM</div><b>Daniel Mensah</b><span>Co-founder &amp; Product</span></div>
+      <div class="team-card rv d3"><div class="team-av">LF</div><b>Lina Farouk</b><span>VP Design</span></div>
+    </div>
+  </div></section>
+  <section class="sec sec-soft" style="padding-top:0"><div class="wrap"><div class="cta-band rv"><h2>Come build with us.</h2><p>We're hiring across engineering, design and product.</p><button class="btn btn-accent btn-lg" data-page="contact">See open roles</button></div></div></section>
+</div>
+
+<!-- CONTACT -->
+<div class="spa-page" id="page-contact">
+  <section class="page-head"><div class="wrap"><span class="eyebrow rv"><span class="d"></span>Contact</span><h1 class="rv">Let's talk.</h1><p class="rv d1">Sales, support or just curious — a human replies within one business day.</p></div></section>
+  <section class="sec" style="padding-top:8px"><div class="wrap"><div class="contact-grid">
+    <form class="rv" id="contactForm">
+      <div class="form-field"><label>Full name</label><input id="cName" required placeholder="Your name"></div>
+      <div class="form-field"><label>Work email</label><input type="email" id="cEmail" required placeholder="you@company.com"></div>
+      <div class="form-field"><label>Company</label><input id="cCompany" placeholder="Company name"></div>
+      <div class="form-field"><label>Team size</label><select id="cSize"><option>1–10</option><option>11–50</option><option>51–200</option><option>201–1000</option><option>1000+</option></select></div>
+      <div class="form-field"><label>How can we help?</label><textarea id="cMsg" required placeholder="Tell us what you're trying to do..."></textarea></div>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center">Send message</button>
+      <div id="contactConfirm" style="display:none;margin-top:18px;background:var(--accentsoft);border:1px solid #d1fae5;border-radius:13px;padding:22px;text-align:center"><b style="font-size:1.05rem">Message sent</b><p style="color:var(--muted);margin-top:5px" id="contactConfirmTxt"></p></div>
+    </form>
+    <aside class="contact-info rv d1">
+      <h3>Other ways to reach us</h3>
+      <div class="ci-row"><span>Sales</span><b>sales@cadence.io</b></div>
+      <div class="ci-row"><span>Support</span><b>help@cadence.io</b></div>
+      <div class="ci-row"><span>Phone</span><b>+234 1 888 4400</b></div>
+      <div class="ci-row"><span>HQ</span><b>Lagos · San Francisco</b></div>
+      <div class="ci-row"><span>Status</span><b style="color:#34d399">● All systems operational</b></div>
+    </aside>
+  </div></div></section>
+</div>
+
+
+<!-- LEGAL PAGES -->
+<div class="spa-page" id="page-privacy">
+  <div class="wrap legal">
+    <h1>Privacy Policy</h1>
+    <p class="upd">Last updated: July 2026</p>
+    <p>Cadence Labs, Inc. ("Cadence," "we," "us") respects your privacy. This policy explains what data we collect, why, and your rights.</p>
+    <h2>Data We Collect</h2>
+    <ul><li><b>Account data:</b> name, email, password (hashed) when you sign up.</li><li><b>Workspace data:</b> projects, tasks, goals, and content you create.</li><li><b>Usage data:</b> pages visited, features used, device/browser info, IP address.</li><li><b>Billing data:</b> handled by Stripe. We never see or store your full card number.</li></ul>
+    <h2>How We Use Data</h2>
+    <ul><li>To provide and improve the service.</li><li>To send transactional emails (receipts, security alerts).</li><li>To analyze usage and fix bugs.</li><li>To prevent abuse and secure the platform.</li></ul>
+    <h2>Data Sharing</h2>
+    <p>We share data only with subprocessors that power the service (Supabase for database/auth, Stripe for payments, email providers for delivery). We never sell your data to third parties.</p>
+    <h2>Your Rights</h2>
+    <ul><li>Access: request a copy of your data.</li><li>Deletion: request account and data deletion.</li><li>Portability: export your data anytime from the app.</li><li>Opt-out: unsubscribe from marketing emails anytime.</li></ul>
+    <p>To exercise any right, email <a href="mailto:privacy@cadence.io">privacy@cadence.io</a>. We respond within 30 days.</p>
+    <h2>Cookies</h2>
+    <p>We use essential cookies for authentication and analytics cookies to understand usage. You can disable analytics cookies in your browser settings.</p>
+    <h2>Contact</h2>
+    <p>Questions? Email <a href="mailto:privacy@cadence.io">privacy@cadence.io</a> or write to: Cadence Labs, Lagos, Nigeria.</p>
+  </div>
+</div>
+
+<div class="spa-page" id="page-terms">
+  <div class="wrap legal">
+    <h1>Terms of Service</h1>
+    <p class="upd">Last updated: July 2026</p>
+    <p>By using Cadence, you agree to these terms. If you do not agree, do not use the service.</p>
+    <h2>1. Your Account</h2>
+    <p>You must be 16 or older. You are responsible for keeping your password secure and for all activity under your account.</p>
+    <h2>2. Subscriptions</h2>
+    <p>Paid plans are billed monthly or annually in advance via Stripe. You can upgrade, downgrade, or cancel anytime. Downgrades take effect at the end of the current billing cycle. Annual plans are non-refundable except where required by law.</p>
+    <h2>3. Free Plan</h2>
+    <p>The Free plan is available indefinitely with limits (5 members, 3 projects). We may change these limits with 30 days notice.</p>
+    <h2>4. Acceptable Use</h2>
+    <p>You agree not to: upload malware, spam, or illegal content; attempt to breach security; scrape or overload the service; use the service to violate any law.</p>
+    <h2>5. Intellectual Property</h2>
+    <p>Cadence and its software, design, and branding are our property. Your workspace content remains yours. You grant us a license to host and process your content solely to provide the service.</p>
+    <h2>6. Disclaimers</h2>
+    <p>The service is provided "as is" without warranties. We do not guarantee uninterrupted or error-free service.</p>
+    <h2>7. Limitation of Liability</h2>
+    <p>To the maximum extent permitted by law, Cadence is not liable for indirect, incidental, or consequential damages, or for loss of profits or data.</p>
+    <h2>8. Termination</h2>
+    <p>You can delete your account anytime. We can suspend or terminate accounts that violate these terms.</p>
+    <h2>9. Governing Law</h2>
+    <p>These terms are governed by the laws of the Federal Republic of Nigeria. Disputes are resolved in Lagos, Nigeria.</p>
+    <h2>10. Contact</h2>
+    <p>Questions? Email <a href="mailto:legal@cadence.io">legal@cadence.io</a>.</p>
+  </div>
+</div>
+
+<div class="spa-page" id="page-dpa">
+  <div class="wrap legal">
+    <h1>Data Processing Agreement</h1>
+    <p class="upd">Last updated: July 2026</p>
+    <p>This DPA applies to customers who use Cadence to process personal data subject to GDPR or similar regulations.</p>
+    <h2>1. Roles</h2>
+    <p>Cadence acts as a Data Processor. The customer acts as Data Controller. Cadence processes personal data only on documented instructions from the customer.</p>
+    <h2>2. Security Measures</h2>
+    <ul><li>Encryption in transit (TLS 1.2+) and at rest (AES-256).</li><li>Row-level security on all user data.</li><li>SOC 2 Type II certified infrastructure.</li><li>Regular security audits and penetration testing.</li><li>Access controls with audit logging.</li></ul>
+    <h2>3. Subprocessors</h2>
+    <p>Cadence uses: Supabase (database, auth, hosting, Ireland/EU), Stripe (payments, USA), and email delivery providers. We notify customers 30 days before adding a new subprocessor.</p>
+    <h2>4. Data Subject Rights</h2>
+    <p>Cadence assists customers in fulfilling data subject requests (access, rectification, deletion, portability) via data export tools and API.</p>
+    <h2>5. Breach Notification</h2>
+    <p>Cadence notifies customers of any personal data breach within 72 hours of becoming aware, with details and remediation steps.</p>
+    <h2>6. Data Deletion</h2>
+    <p>On account termination, Cadence deletes all customer data within 30 days, except where retention is required by law.</p>
+    <h2>7. Contact</h2>
+    <p>Email <a href="mailto:dpa@cadence.io">dpa@cadence.io</a> for questions or to execute a signed DPA.</p>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="co-modal" id="checkoutModal" onclick="if(event.target.id==='checkoutModal')closeCheckout()">
+  <div class="co-card" id="coCard">
+    <button class="co-close" onclick="closeCheckout()">Close</button>
+    <div id="coFormArea">
+      <h3>Subscribe to <span id="coPlanName">Pro</span></h3>
+      <div class="co-summary">
+        <div class="sr"><span>Plan</span><b id="coPlanDisp">Pro</b></div>
+        <div class="sr"><span>Price</span><b id="coPriceDisp">$24/mo</b></div>
+        <div class="sr"><span>Billing</span><b id="coBillDisp">Monthly</b></div>
+      </div>
+      <label>Card number</label>
+      <input id="coCardNum" placeholder="4242 4242 4242 4242" inputmode="numeric" maxlength="19">
+      <div class="co2">
+        <div><label>Expiry</label><input id="coExp" placeholder="MM / YY" maxlength="7"></div>
+        <div><label>CVC</label><input id="coCvc" placeholder="123" inputmode="numeric" maxlength="4"></div>
+      </div>
+      <label>Name on card</label>
+      <input id="coNameCard" placeholder="Full name">
+      <button class="btn btn-accent btn-full" id="coBtn" onclick="processCheckout()">Subscribe</button>
+      <p class="co-note">Secured by Stripe. This is a demo checkout. No real charge until you connect Stripe keys.</p>
+    </div>
+    <div id="coSuccessArea" style="display:none">
+      <div class="co-success">
+        <div class="ck">✓</div>
+        <h3>Subscription active!</h3>
+        <p id="coSuccessMsg">Your Pro plan is now active.</p>
+        <a class="btn btn-accent" href="app.html" style="text-decoration:none">Open dashboard →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  <div class="wrap"><div class="foot-grid">
+    <div><div class="foot-brand"><span class="lm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2-7 4 14 2-7h3"/></svg></span>Cadence</div><p>The project workspace teams enjoy. Built in Lagos, used everywhere.</p></div>
+    <div class="foot-col"><h6>Product</h6><a data-page="features">Features</a><a data-page="pricing">Pricing</a><a data-page="features">Integrations</a><a data-page="features">Security</a></div>
+    <div class="foot-col"><h6>Company</h6><a data-page="about">About</a><a data-page="about">Careers</a><a data-page="contact">Contact</a><a data-page="about">Blog</a></div>
+    <div class="foot-col"><h6>Connect</h6><a>Twitter / X</a><a>LinkedIn</a><a>GitHub</a><a>status.cadence.io</a></div>
+  </div><div class="foot-bot"><span>© 2026 Cadence Labs, Inc. · SOC 2 Type II</span><a style="cursor:pointer" onclick="showPage('privacy')">Privacy</a> · <a style="cursor:pointer" onclick="showPage('terms')">Terms</a> · <a style="cursor:pointer" onclick="showPage('dpa')">DPA</a></div></div>
+</footer>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div class="auth-modal" id="authModal" onclick="if(event.target.id==='authModal')closeAuth()">
+  <div class="auth-card2">
+    <button class="auth-close" onclick="closeAuth()">Close</button>
+    <div class="auth-logo"><span class="lm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 12h3l2-7 4 14 2-7h3"/></svg></span>Cadence</div>
+    <div class="auth-tabs"><button class="at on" onclick="setAuthMode('login')">Sign in</button><button class="at" onclick="setAuthMode('signup')">Create account</button></div>
+    <div id="authNameF" style="display:none"><input id="authName" placeholder="Full name"></div>
+    <input id="authEmail" type="email" placeholder="Email address">
+    <input id="authPass" type="password" placeholder="Password">
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" id="authSubmit" onclick="doAuthModal()">Sign in</button>
+    <div id="authError" style="color:var(--red);font-size:.82rem;margin-top:8px;min-height:16px"></div>
+    <div id="authSuccess" style="display:none;text-align:center;padding:14px 0">
+      <div style="font-size:2rem;margin-bottom:6px">✓</div>
+      <p style="font-weight:600;font-size:1.05rem;margin-bottom:4px">You're in!</p>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px" id="authSuccessEmail"></p>
+      <a class="btn btn-accent" href="app.html" style="text-decoration:none">Open dashboard →</a>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span id="toastTxt"></span></div>
+
+<script>
+const PLANS=[
+ {name:'Free',desc:'For individuals and tiny teams getting started.',m:0,btn:'Start free',feat:['Up to 5 members','3 projects','Live dashboards','5 integrations','Mobile apps','Basic support']},
+ {name:'Pro',desc:'For growing teams that need automations and analytics.',m:24,a:19,btn:'Start 14-day trial',feat:['Everything in Free','Unlimited projects & members','AI automations','Goals & OKRs','Advanced analytics','40+ integrations','Custom fields','Time tracking','Saved views','Scheduled reports','30-day version history'],feat2:true},
+ {name:'Scale',desc:'For organisations that need control, security and scale.',m:59,a:49,btn:'Talk to sales',feat:['Everything in Pro','SSO / SAML / SCIM','Custom roles & permissions','Advanced audit logs (1-year)','99.99% uptime SLA','Portfolio & resource management','Time tracking & budgeting','Full API + webhooks','White-labeling (custom domain)','Data residency (EU / US)','Dedicated success manager','Priority support (4-hr SLA)','Unlimited automations','Unlimited version history','Bulk operations & imports']},
+];
+const FAQ=[
+ ['Is there really a free plan?','Yes — Free is free forever, for up to 5 members and 3 projects. No card, no expiry.'],
+ ['Can I change plans later?','Anytime. Upgrades are instant; downgrades take effect at the end of your billing cycle.'],
+ ['How does annual billing work?','Annual plans are billed once a year and save 20% versus paying monthly.'],
+ ['Do you offer discounts?','Nonprofits, students and early-stage startups get 50% off Pro. Just reach out.'],
+ ['How secure is Cadence?','SOC 2 Type II certified, encrypted in transit and at rest, with SSO/SAML and audit logs on Scale.'],
+ ['Who owns my data?','You do. Export everything anytime; we never sell or train on your data.'],
+];
+const INT=['Slack','GitHub','Figma','Linear','Notion','Zoom','Drive','Jira','Salesforce','HubSpot','Asana','Zendesk'];
+
+const header=document.getElementById('header'),backTop=document.getElementById('backTop');
+window.addEventListener('scroll',()=>{header.classList.toggle('scrolled',window.scrollY>50);backTop.classList.toggle('show',window.scrollY>600)});
+
+const pages=document.querySelectorAll('.spa-page');let currentPage='home';
+function showPage(name,push=true){currentPage=name;pages.forEach(p=>p.classList.toggle('active',p.id==='page-'+name));window.scrollTo({top:0,behavior:'instant'});if(push){try{history.pushState({page:name},'', '#'+name)}catch(e){}}setTimeout(initReveals,50);closeMobile()}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-page]');if(!el)return;e.preventDefault();showPage(el.dataset.page)});
+window.addEventListener('popstate',e=>{if(e.state&&e.state.page)showPage(e.state.page,false)});
+if(location.hash){const h=location.hash.slice(1);if(['home','features','pricing','about','contact','privacy','terms','dpa'].includes(h))setTimeout(()=>showPage(h,false),100)}
+
+let annual=false;
+function money(n){return n===0?'$0':'$'+n}
+function planHTML(p){const price=annual?p.a:p.m;return '<div class="plan '+(p.feat2?'feat':'')+'"><h3>'+p.name+'</h3><div class="desc">'+p.desc+'</div><div class="amt mono">'+(price===0?'Free':money(price))+'</div>'+(price===0?'<div class="per">&nbsp;</div>':'<div class="per">per user / month · '+(annual?'billed annually':'billed monthly')+'</div>')+'<ul>'+p.feat.map(f=>'<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'+f+'</li>').join('')+'</ul><button class="btn plan-btn '+(p.feat2?'btn-accent':'btn-primary')+'" data-plan="'+p.name+'" style="justify-content:center;width:100%">'+p.btn+'</button></div>';}
+function renderPrices(){const g=document.getElementById('pricingGrid');if(g)g.innerHTML=PLANS.map(planHTML).join('');const h=document.getElementById('homePrices');if(h)h.innerHTML=PLANS.map(planHTML).join('');setTimeout(initReveals,40)}
+function bindToggle(id){const t=document.getElementById(id);if(!t)return;t.addEventListener('click',()=>{annual=!annual;t.classList.toggle('ann',annual);t.querySelectorAll('span').forEach((s,i)=>{if(i<2)s.classList.toggle('on',annual?(i===1):(i===0))});renderPrices()});}
+bindToggle('priceToggle');bindToggle('priceToggle2');
+
+function renderFAQ(){['faqList','faqList2'].forEach(id=>{const f=document.getElementById(id);if(f)f.innerHTML=FAQ.map(q=>'<div class=\"faq-item\"><button class=\"faq-h\" onclick=\"toggleFAQ(this)\"><span>'+q[0]+'</span><span class=\"pm\">+</span></button><div class=\"faq-b\"><div>'+q[1]+'</div></div></div>').join('')})}
+function toggleFAQ(btn){const item=btn.parentElement;item.classList.toggle('open');const b=item.querySelector('.faq-b');b.style.maxHeight=item.classList.contains('open')?b.scrollHeight+'px':0}
+
+document.getElementById('contactForm').addEventListener('submit',e=>{e.preventDefault();const n=document.getElementById('cName').value||'there';document.getElementById('contactConfirmTxt').textContent='Thanks, '+n+' — we received your message and will reply within one business day.';document.getElementById('contactConfirm').style.display='block';e.target.querySelector('button[type=submit]').style.display='none';toast('Message sent')});
+
+(function(){const it=document.getElementById('intTrack');if(it)it.innerHTML=(INT.concat(INT)).map(t=>'<div class=\"int-chip\"><span class=\"ic\">'+t[0]+'</span>'+t+'</div>').join('')})();
+
+const burger=document.getElementById('burger'),mm=document.getElementById('mobileMenu');
+burger.addEventListener('click',()=>mm.classList.toggle('open'));
+function closeMobile(){mm.classList.remove('open')}
+
+function revealCheck(){var vp=window.innerHeight;document.querySelectorAll('.spa-page.active .rv:not(.in)').forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vp*0.9&&r.bottom>0)el.classList.add('in')})}
+function revealAll(){document.querySelectorAll('.rv:not(.in)').forEach(function(el){el.classList.add('in')})}
+function initReveals(){revealCheck()}
+window.addEventListener('scroll',revealCheck,{passive:true});window.addEventListener('resize',revealCheck);
+
+function runCounters(){document.querySelectorAll('[data-count]').forEach(el=>{if(el.dataset.done)return;el.dataset.done='1';const target=+el.dataset.count;const suffix=el.dataset.suffix||'';const prefix=suffix.startsWith('$')?'$':'';const realSuffix=prefix?suffix.slice(1):suffix;let cur=0;const inc=target/40;const t=setInterval(()=>{cur+=inc;if(cur>=target){cur=target;clearInterval(t)}el.textContent=prefix+Math.floor(cur).toLocaleString()+realSuffix},30)})}
+
+let toastT;function toast(msg){const t=document.getElementById('toast');document.getElementById('toastTxt').textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3000)}
+
+function toggleTheme(){document.body.classList.toggle("dark");try{localStorage.setItem("cadence_theme",document.body.classList.contains("dark")?"dark":"light")}catch(e){}}
+try{if(localStorage.getItem("cadence_theme")==="dark")document.body.classList.add("dark")}catch(e){}
+var SB_URL='https://ilimijajrykdnofgvguw.supabase.co';
+var SB_KEY='sb_publishable_ux45wC0g_EsAmOI3PEUMGw_BgPG3_Sq';
+var sb2=null;try{sb2=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){console.log('SB not loaded')}
+var authMode='login';
+function openAuth(){document.getElementById('authModal').classList.add('open');setAuthMode('login')}
+function closeAuth(){document.getElementById('authModal').classList.remove('open')}
+function setAuthMode(m){authMode=m;document.querySelectorAll('.auth-tabs .at').forEach(function(b,i){b.classList.toggle('on',(m==='login'?0:1)===i)});document.getElementById('authNameF').style.display=(m==='signup')?'block':'none';document.getElementById('authSubmit').textContent=(m==='signup')?'Create account':'Sign in';document.getElementById('authError').textContent='';document.getElementById('authSuccess').style.display='none';document.getElementById('authSubmit').style.display=''}
+async function doAuthModal(){
+  var em=document.getElementById('authEmail').value.trim();var pw=document.getElementById('authPass').value;var er=document.getElementById('authError');er.textContent='';
+  if(!em||!pw){er.textContent='Enter email and password.';return}
+  if(!sb2){er.textContent='Cannot reach server (preview limitation). Works when deployed.';return}
+  try{
+    if(authMode==='signup'){var nm=document.getElementById('authName').value.trim();var r=await sb2.auth.signUp({email:em,password:pw,options:{data:{full_name:nm||' '}}});if(r.error){er.textContent=r.error.message;return}if(r.user&&!r.session){er.textContent='Check your email for a code, then sign in.';return}}
+    else{var r=await sb2.auth.signInWithPassword({email:em,password:pw});if(r.error){er.textContent=r.error.message;return}}
+    document.getElementById('authSuccess').style.display='block';document.getElementById('authSuccessEmail').textContent='Logged in as '+em;document.getElementById('authSubmit').style.display='none';
+  }catch(e){er.textContent=(e.message||'').substring(0,80)}
+}
+
+var coPlan='',coPrice=0;
+function goPlan(name){
+  var p=PLANS.find(function(x){return x.name===name});if(!p)return;
+  var price=annual?(p.a||0):(p.m||0);
+  if(price===0){window.location.href='app.html';return}
+  coPlan=name;coPrice=price;
+  document.getElementById('coPlanName').textContent=name;
+  document.getElementById('coPlanDisp').textContent=name;
+  document.getElementById('coPriceDisp').textContent='$'+price+(annual?'/mo (billed annually)':'/mo');
+  document.getElementById('coBillDisp').textContent=annual?'Annual':'Monthly';
+  document.getElementById('coFormArea').style.display='block';
+  document.getElementById('coSuccessArea').style.display='none';
+  document.getElementById('checkoutModal').classList.add('open');
+}
+function closeCheckout(){document.getElementById('checkoutModal').classList.remove('open')}
+function processCheckout(){
+  var btn=document.getElementById('coBtn');btn.textContent='Processing...';btn.disabled=true;
+  setTimeout(function(){
+    document.getElementById('coFormArea').style.display='none';
+    document.getElementById('coSuccessArea').style.display='block';
+    document.getElementById('coSuccessMsg').textContent='Your '+coPlan+' plan is now active.';
+    btn.textContent='Subscribe';btn.disabled=false;
+  },1800);
+}
+document.addEventListener("click",function(e){var b=e.target.closest(".plan-btn");if(b)goPlan(b.dataset.plan)});
+try{renderPrices();renderFAQ();revealCheck();const sb=document.querySelector('.stats-band');if(sb){const obs=new IntersectionObserver(e=>{if(e[0].isIntersecting){runCounters();obs.disconnect()}},{threshold:.4});obs.observe(sb)}}catch(e){console.error(e);revealAll()}
+setTimeout(function(){var vp=window.innerHeight,broken=false;document.querySelectorAll('.spa-page.active .rv:not(.in)').forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vp*0.9)broken=true});if(broken)revealAll()},5000);
+</script>
+</body>
+</html>

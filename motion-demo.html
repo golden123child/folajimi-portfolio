@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion Design Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;overflow-x:hidden}
+
+/* ===== SECTION 1: HERO — image zooms as you scroll ===== */
+.hero{height:200vh;position:relative}
+.hero-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hero-img{position:absolute;inset:0;background:linear-gradient(135deg,#0a0e1a,#1a1a2e,#16213e);transform-origin:center;display:flex;align-items:center;justify-content:center}
+.hero-img::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 30%,rgba(0,0,0,0.6) 100%)}
+.hero-text{position:relative;z-index:2;text-align:center}
+.hero-text h1{font-size:clamp(2rem,8vw,6rem);font-weight:800;letter-spacing:-0.03em;line-height:1}
+.hero-text p{font-size:clamp(0.8rem,2vw,1.2rem);color:rgba(255,255,255,0.5);margin-top:1rem;letter-spacing:0.1em;text-transform:uppercase}
+
+/* Orbital rings */
+.ring{position:absolute;border:1px solid rgba(255,255,255,0.06);border-radius:50%;pointer-events:none}
+.ring1{width:400px;height:400px;animation:spin 20s linear infinite}
+.ring2{width:600px;height:600px;animation:spin 30s linear infinite reverse}
+.ring3{width:800px;height:800px;animation:spin 40s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* Glow orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.3}
+.orb1{width:300px;height:300px;background:#d4af37;top:20%;left:10%}
+.orb2{width:250px;height:250px;background:#5eead4;bottom:20%;right:15%}
+
+/* ===== SECTION 2: PARALLAX IMAGE FLOW ===== */
+.parallax{height:200vh;position:relative;background:#000}
+.parallax-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center}
+.parallax-img{position:absolute;inset:0;background:linear-gradient(135deg,#1a1a2e,#0f3460,#16213e);transform-origin:center bottom}
+.parallax-img::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0.8),transparent 50%)}
+.parallax-content{position:relative;z-index:2;max-width:600px;padding:0 3rem}
+.parallax-content .label{font-size:0.75rem;letter-spacing:0.3em;text-transform:uppercase;color:#d4af37;margin-bottom:1rem}
+.parallax-content h2{font-size:clamp(1.8rem,5vw,3.5rem);font-weight:700;line-height:1.1;margin-bottom:1.5rem}
+.parallax-content p{font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.8}
+
+/* Floating particles canvas */
+#particles{position:absolute;inset:0;z-index:1;pointer-events:none}
+
+/* ===== SECTION 3: IMAGE REVEAL (clip-path) ===== */
+.reveal-section{height:200vh;position:relative;background:#0a0e1a}
+.reveal-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.reveal-img{position:absolute;inset:0;background:linear-gradient(135deg,#0d1117,#161b22,#1f2937);clip-path:inset(50% 50% 50% 50%);display:flex;align-items:center;justify-content:center}
+.reveal-img::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 70%,rgba(212,175,55,0.15),transparent 60%)}
+.reveal-text{position:relative;z-index:2;text-align:center;opacity:0;transform:translateY(40px)}
+.reveal-text h2{font-size:clamp(2rem,6vw,4rem);font-weight:800;letter-spacing:-0.02em}
+.reveal-text .num{font-family:monospace;font-size:0.8rem;color:#d4af37;letter-spacing:0.2em;display:block;margin-bottom:1rem}
+
+/* ===== SECTION 4: HORIZONTAL SCROLL PROJECTS ===== */
+.hscroll{height:300vh;position:relative;background:#000}
+.hscroll-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center}
+.hscroll-track{display:flex;gap:2rem;padding:0 5rem;will-change:transform}
+.hscroll-card{flex-shrink:0;width:70vw;max-width:600px;height:70vh;max-height:500px;border-radius:20px;overflow:hidden;position:relative;display:flex;align-items:flex-end;padding:2rem}
+.hscroll-card::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0.8),transparent 50%)}
+.hscroll-card:nth-child(1){background:linear-gradient(135deg,#1a1a2e,#16213e)}
+.hscroll-card:nth-child(2){background:linear-gradient(135deg,#0f3460,#1a1a2e)}
+.hscroll-card:nth-child(3){background:linear-gradient(135deg,#1a1a2e,#0f3460)}
+.hscroll-card:nth-child(4){background:linear-gradient(135deg,#16213e,#0a0e1a)}
+.hscroll-card-content{position:relative;z-index:2}
+.hscroll-card-content .cat{font-family:monospace;font-size:0.7rem;color:#d4af37;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.5rem}
+.hscroll-card-content h3{font-size:2rem;font-weight:700;margin-bottom:0.5rem}
+.hscroll-card-content p{font-size:0.9rem;color:rgba(255,255,255,0.5)}
+
+/* ===== SECTION 5: SPLIT TEXT ===== */
+.split-section{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a0e1a;position:relative;overflow:hidden}
+.split-section .split-text{font-size:clamp(2rem,10vw,8rem);font-weight:900;letter-spacing:-0.04em;text-align:center;line-height:0.9}
+.split-section .split-text span{display:inline-block;transition:transform 0.1s ease-out}
+
+/* Scroll indicator */
+.scroll-hint{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:100;color:rgba(255,255,255,0.3);font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;pointer-events:none;transition:opacity 0.3s}
+.scroll-hint.hide{opacity:0}
+
+/* Progress line */
+.progress-line{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#d4af37,#5eead4);z-index:100;width:0%;transition:width 0.05s linear}
+</style>
+</head>
+<body>
+
+<div class="progress-line" id="progress"></div>
+<div class="scroll-hint" id="hint">SCROLL TO EXPLORE</div>
+
+<!-- SECTION 1: Hero with zoom -->
+<div class="hero">
+<div class="hero-sticky">
+<div class="hero-img" id="heroImg">
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="ring ring1"></div>
+<div class="ring ring2"></div>
+<div class="ring ring3"></div>
+</div>
+<div class="hero-text" id="heroText">
+<h1>MOTION<br>DESIGN</h1>
+<p>Scroll to experience</p>
+</div>
+</div>
+</div>
+
+<!-- SECTION 2: Parallax image flow -->
+<div class="parallax">
+<div class="parallax-sticky">
+<canvas id="particles"></canvas>
+<div class="parallax-img" id="parallaxImg"></div>
+<div class="parallax-content" id="parallaxContent">
+<div class="label">// 01 — Parallax</div>
+<h2>Images that flow<br>as you move</h2>
+<p>Background layers shift at different speeds, creating depth. Text slides in from the side. The whole scene feels alive — like the image is breathing with your scroll.</p>
+</div>
+</div>
+</div>
+
+<!-- SECTION 3: Clip-path reveal -->
+<div class="reveal-section">
+<div class="reveal-sticky">
+<div class="reveal-img" id="revealImg"></div>
+<div class="reveal-text" id="revealText">
+<span class="num">// 02 — Reveal</span>
+<h2>EMERGE</h2>
+</div>
+</div>
+</div>
+
+<!-- SECTION 4: Horizontal scroll -->
+<div class="hscroll">
+<div class="hscroll-sticky">
+<div class="hscroll-track" id="hscrollTrack">
+<div class="hscroll-card">
+<div class="hscroll-card-content">
+<div class="cat">// project 01</div>
+<h3>Student Portfolio</h3>
+<p>Gold/elegant theme with scroll expansion</p>
+</div>
+</div>
+<div class="hscroll-card">
+<div class="hscroll-card-content">
+<div class="cat">// project 02</div>
+<h3>Tech Portfolio</h3>
+<p>Cyan terminal aesthetic with live typing</p>
+</div>
+</div>
+<div class="hscroll-card">
+<div class="hscroll-card-content">
+<div class="cat">// project 03</div>
+<h3>Systems Portfolio</h3>
+<p>Emerald IDE-style with bento grid</p>
+</div>
+</div>
+<div class="hscroll-card">
+<div class="hscroll-card-content">
+<div class="cat">// project 04</div>
+<h3>Coming Soon</h3>
+<p>Your next project could be here</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SECTION 5: Split text -->
+<div class="split-section">
+<div class="split-text" id="splitText">MOTION IS DESIGN</div>
+</div>
+
+<script>
+(function(){
+// ===== SCROLL PROGRESS =====
+var progress = document.getElementById('progress');
+var hint = document.getElementById('hint');
+var totalHeight = document.body.scrollHeight - window.innerHeight;
+
+// ===== SECTION 1: HERO ZOOM =====
+var heroImg = document.getElementById('heroImg');
+var heroText = document.getElementById('heroText');
+var hero = document.querySelector('.hero');
+
+// ===== SECTION 2: PARALLAX =====
+var parallaxImg = document.getElementById('parallaxImg');
+var parallaxContent = document.getElementById('parallaxContent');
+var parallax = document.querySelector('.parallax');
+
+// ===== SECTION 3: REVEAL =====
+var revealImg = document.getElementById('revealImg');
+var revealText = document.getElementById('revealText');
+var revealSection = document.querySelector('.reveal-section');
+
+// ===== SECTION 4: HORIZONTAL SCROLL =====
+var hscrollTrack = document.getElementById('hscrollTrack');
+var hscroll = document.querySelector('.hscroll');
+
+// ===== SECTION 5: SPLIT TEXT =====
+var splitText = document.getElementById('splitText');
+var original = splitText.textContent;
+splitText.innerHTML = original.split('').map(function(c){
+return c === ' ' ? '<span>&nbsp;</span>' : '<span>'+c+'</span>';
+}).join('');
+var splitSpans = splitText.querySelectorAll('span');
+
+// ===== PARTICLES CANVAS =====
+var canvas = document.getElementById('particles');
+var ctx = canvas.getContext('2d');
+var particles = [];
+var parallaxSticky = document.querySelector('.parallax-sticky');
+
+function resizeCanvas(){
+canvas.width = parallaxSticky.offsetWidth;
+canvas.height = parallaxSticky.offsetHeight;
+}
+
+function initParticles(){
+particles = [];
+for(var i=0; i<80; i++){
+particles.push({
+x: Math.random() * canvas.width,
+y: Math.random() * canvas.height,
+vx: (Math.random() - 0.5) * 0.3,
+vy: (Math.random() - 0.5) * 0.3,
+size: Math.random() * 2 + 0.5,
+opacity: Math.random() * 0.5 + 0.1
+});
+}
+}
+
+resizeCanvas();
+initParticles();
+window.addEventListener('resize', function(){ resizeCanvas(); initParticles(); });
+
+function drawParticles(){
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+particles.forEach(function(p){
+p.x += p.vx;
+p.y += p.vy;
+if(p.x < 0) p.x = canvas.width;
+if(p.x > canvas.width) p.x = 0;
+if(p.y < 0) p.y = canvas.height;
+if(p.y > canvas.height) p.y = 0;
+
+ctx.beginPath();
+ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+ctx.fillStyle = 'rgba(212, 175, 55, ' + p.opacity + ')';
+ctx.fill();
+});
+}
+
+// ===== MAIN SCROLL HANDLER =====
+function onScroll(){
+var scrollY = window.scrollY;
+
+// Progress
+var pct = (scrollY / totalHeight) * 100;
+progress.style.width = pct + '%';
+
+// Hide hint after first scroll
+if(scrollY > 100) hint.classList.add('hide');
+
+// ===== HERO: zoom image, fade text =====
+var heroRect = hero.getBoundingClientRect();
+var heroProgress = Math.max(0, Math.min(1, -heroRect.top / (hero.offsetHeight - window.innerHeight)));
+var scale = 1 + heroProgress * 0.5; // 1x to 1.5x
+heroImg.style.transform = 'scale(' + scale + ')';
+heroText.style.opacity = Math.max(0, 1 - heroProgress * 2);
+heroText.style.transform = 'translateY(' + (heroProgress * -100) + 'px)';
+
+// ===== PARALLAX: image shifts, content slides =====
+var parallaxRect = parallax.getBoundingClientRect();
+var parallaxProgress = Math.max(0, Math.min(1, -parallaxRect.top / (parallax.offsetHeight - window.innerHeight)));
+parallaxImg.style.transform = 'translateY(' + (parallaxProgress * 20) + '%) scale(' + (1 + parallaxProgress * 0.2) + ')';
+parallaxContent.style.transform = 'translateX(' + ((1 - parallaxProgress) * -50) + 'px)';
+parallaxContent.style.opacity = Math.min(1, parallaxProgress * 2);
+
+// Draw particles when in view
+if(parallaxRect.top < window.innerHeight && parallaxRect.bottom > 0){
+drawParticles();
+}
+
+// ===== REVEAL: clip-path opens =====
+var revealRect = revealSection.getBoundingClientRect();
+var revealProgress = Math.max(0, Math.min(1, -revealRect.top / (revealSection.offsetHeight - window.innerHeight)));
+var insetVal = 50 - (revealProgress * 50); // 50% to 0%
+revealImg.style.clipPath = 'inset(' + insetVal + '% ' + insetVal + '% ' + insetVal + '% ' + insetVal + '%)';
+revealText.style.opacity = revealProgress > 0.4 ? Math.min(1, (revealProgress - 0.4) * 3) : 0;
+revealText.style.transform = 'translateY(' + (40 - (revealProgress * 40)) + 'px)';
+
+// ===== HORIZONTAL SCROLL =====
+var hscrollRect = hscroll.getBoundingClientRect();
+if(hscrollRect.top <= 0 && hscrollRect.bottom >= window.innerHeight){
+var hProgress = Math.max(0, Math.min(1, -hscrollRect.top / (hscroll.offsetHeight - window.innerHeight)));
+var trackWidth = hscrollTrack.scrollWidth;
+var maxScroll = trackWidth - window.innerWidth + 80; // 80 for padding
+hscrollTrack.style.transform = 'translateX(' + (-hProgress * maxScroll) + 'px)';
+}
+
+// ===== SPLIT TEXT =====
+var splitSection = document.querySelector('.split-section');
+var splitRect = splitSection.getBoundingClientRect();
+if(splitRect.top < window.innerHeight && splitRect.bottom > 0){
+var centerOffset = (window.innerHeight / 2) - (splitRect.top + splitSection.offsetHeight / 2);
+splitSpans.forEach(function(span, i){
+var offset = Math.sin((i / splitSpans.length) * Math.PI + centerOffset * 0.005) * 30;
+span.style.transform = 'translateY(' + offset + 'px)';
+});
+}
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', function(){ totalHeight = document.body.scrollHeight - window.innerHeight; });
+onScroll();
+
+// ===== Smooth scroll animation loop for particles =====
+function animate(){
+var parallaxRect = parallax.getBoundingClientRect();
+if(parallaxRect.top < window.innerHeight && parallaxRect.bottom > 0){
+drawParticles();
+}
+requestAnimationFrame(animate);
+}
+animate();
+
+})();
+</script>
+</body>
+</html>
