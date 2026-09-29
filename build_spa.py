@@ -45,7 +45,7 @@ for pid, body in PAGES:
 NAV = """  <nav class="navbar">
     <div class="container nav-inner">
       <a href="#home" data-page="home" class="logo"><span class="dot"></span>Wuraola<span style="color:var(--gold)">.</span></a>
-      <div class="nav-links">
+      <div class="nav-links" id="primary-navigation">
         <a href="#home" data-page="home" class="active">Home</a>
         <a href="#about" data-page="about">About</a>
         <a href="#expertise" data-page="expertise">Expertise</a>
@@ -53,7 +53,7 @@ NAV = """  <nav class="navbar">
         <a href="#journey" data-page="journey">Journey</a>
         <a href="#contact" data-page="contact" class="nav-cta">Let's Talk</a>
       </div>
-      <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </nav>"""
 
