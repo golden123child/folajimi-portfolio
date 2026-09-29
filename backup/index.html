@@ -889,6 +889,91 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: var(--shadow-deep);
 }
 
+.selected-projects-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  align-items: stretch;
+}
+
+.selected-projects-grid .project-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.project-preview-link {
+  display: block;
+  overflow: hidden;
+}
+
+.selected-projects-grid .project-visual {
+  aspect-ratio: 16 / 10;
+  height: auto;
+  background: var(--bg-elevated);
+}
+
+.selected-projects-grid .project-visual img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.selected-projects-grid .project-visual::after {
+  background: linear-gradient(180deg, transparent 48%, rgba(8, 8, 13, 0.72));
+}
+
+.selected-projects-grid .project-card:hover .project-visual img {
+  transform: scale(1.04);
+}
+
+.preview-visit {
+  position: absolute;
+  z-index: 1;
+  right: 1rem;
+  bottom: 0.9rem;
+  color: #fff;
+  font-size: 0.82rem;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.selected-projects-grid .project-card:hover .preview-visit,
+.selected-projects-grid .project-preview-link:focus-visible .preview-visit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.selected-projects-grid .project-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.selected-projects-grid .project-body p {
+  flex: 1;
+}
+
+.project-card-link {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 1.3rem;
+  color: var(--gold-light);
+  font-size: 0.86rem;
+}
+
+.project-card-link:hover { color: var(--gold); }
+
+@media (max-width: 480px) {
+  .selected-projects-grid { gap: 1.25rem; }
+  .selected-projects-grid .project-body { padding: 1.35rem; }
+}
+
 .project-visual {
   height: 240px;
   position: relative;
@@ -2459,14 +2544,47 @@ button:disabled { opacity: 0.7; cursor: default; }
 
   <section class="section" style="background:var(--bg-secondary)"><div class="container">
     <div class="reveal" style="max-width:680px">
-      <span class="eyebrow">What I Build</span>
-      <h2 class="section-title">The kind of work<br>I <span class="text-gold text-italic">deliver.</span></h2>
-      <p class="section-subtitle">Here's an honest look at the work I take on across the full stack.</p>
+      <span class="eyebrow">Selected Projects</span>
+      <h2 class="section-title">A closer look at what I <span class="text-gold text-italic">build.</span></h2>
+      <p class="section-subtitle">Web experiences and product interfaces, each shaped around its own audience and purpose.</p>
     </div>
-    <div class="services-grid">
-      <div class="card service-card tilt feature-card reveal"><div class="service-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg></div><div class="project-cat">WordPress &middot; WooCommerce</div><h3>Custom WordPress Builds</h3><p>Bespoke themes, plugins and online stores &mdash; fast, maintainable, and easy for clients to manage.</p><div class="project-tags"><span>WordPress</span><span>PHP</span><span>WooCommerce</span></div></div>
-      <div class="card service-card tilt feature-card reveal delay-1"><div class="service-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><div class="project-cat">Full Stack &middot; Web Apps</div><h3>Web Applications</h3><p>End-to-end apps with React front-ends and Python, Node.js or PHP back-ends &mdash; built to scale.</p><div class="project-tags"><span>React</span><span>Python</span><span>Node.js</span></div></div>
-      <div class="card service-card tilt feature-card reveal delay-2"><div class="service-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg></div><div class="project-cat">UI / UX &middot; Design</div><h3>Interface Design</h3><p>Thoughtful, usable interfaces designed in Figma &mdash; from wireframe to polished prototype.</p><div class="project-tags"><span>Figma</span><span>UI/UX</span><span>Prototyping</span></div></div>
+    <div class="projects-grid selected-projects-grid">
+      <article class="project-card reveal">
+        <a class="project-preview-link" href="https://apartmentbyroyaltieswebsite.vercel.app/#/" target="_blank" rel="noopener noreferrer" aria-label="View Apartments by Royalties website">
+          <div class="project-visual"><img src="assets/apartments-by-royalties-preview.png" alt="Apartments by Royalties homepage preview" loading="lazy"><span class="preview-visit">View project <span aria-hidden="true">&rarr;</span></span></div>
+        </a>
+        <div class="project-body"><div class="project-cat">Property &amp; Lifestyle &middot; Lagos</div><h3>Apartments by Royalties</h3><p>A premium property and lifestyle platform for Lagos stays, rentals, luxury mobility, charters and real-estate opportunities.</p><div class="project-tags"><span>Web Design</span><span>Property Platform</span><span>WhatsApp Enquiries</span></div><a class="project-card-link" href="https://apartmentbyroyaltieswebsite.vercel.app/#/" target="_blank" rel="noopener noreferrer">Visit live site <span aria-hidden="true">&rarr;</span></a></div>
+      </article>
+      <article class="project-card reveal delay-1">
+        <a class="project-preview-link" href="../cadence.html" target="_blank" rel="noopener noreferrer" aria-label="View Cadence project website">
+          <div class="project-visual"><img src="assets/cadence-desktop-preview.png" alt="Cadence project workspace website preview" loading="lazy"><span class="preview-visit">View project <span aria-hidden="true">&rarr;</span></span></div>
+        </a>
+        <div class="project-body"><div class="project-cat">SaaS &middot; Product Website</div><h3>Cadence</h3><p>A calm, conversion-focused website for a project workspace that brings plans, tasks, goals and analytics together.</p><div class="project-tags"><span>Product Design</span><span>Responsive Web</span><span>UI/UX</span></div><a class="project-card-link" href="../cadence.html" target="_blank" rel="noopener noreferrer">View project <span aria-hidden="true">&rarr;</span></a></div>
+      </article>
+      <article class="project-card reveal delay-2">
+        <a class="project-preview-link" href="../cadence-app.html" target="_blank" rel="noopener noreferrer" aria-label="View Cadence app interface">
+          <div class="project-visual"><img src="assets/cadence-app-preview.png" alt="Cadence app sign-in interface preview" loading="lazy"><span class="preview-visit">View project <span aria-hidden="true">&rarr;</span></span></div>
+        </a>
+        <div class="project-body"><div class="project-cat">SaaS &middot; App Interface</div><h3>Cadence App</h3><p>A companion workspace interface concept with a streamlined sign-in and account creation experience.</p><div class="project-tags"><span>Web App</span><span>Interface Design</span><span>Supabase</span></div><a class="project-card-link" href="../cadence-app.html" target="_blank" rel="noopener noreferrer">View app <span aria-hidden="true">&rarr;</span></a></div>
+      </article>
+      <article class="project-card reveal">
+        <a class="project-preview-link" href="../ember-oak.html" target="_blank" rel="noopener noreferrer" aria-label="View Ember and Oak restaurant website">
+          <div class="project-visual"><img src="assets/ember-oak-preview.png" alt="Ember and Oak restaurant website preview" loading="lazy"><span class="preview-visit">View project <span aria-hidden="true">&rarr;</span></span></div>
+        </a>
+        <div class="project-body"><div class="project-cat">Hospitality &middot; Restaurant</div><h3>Ember &amp; Oak</h3><p>A refined digital presence for a fire-cooked fine-dining concept in Ikoyi, Lagos.</p><div class="project-tags"><span>Brand Experience</span><span>Restaurant Website</span><span>Responsive Web</span></div><a class="project-card-link" href="../ember-oak.html" target="_blank" rel="noopener noreferrer">View project <span aria-hidden="true">&rarr;</span></a></div>
+      </article>
+      <article class="project-card reveal delay-1">
+        <a class="project-preview-link" href="../velar.html" target="_blank" rel="noopener noreferrer" aria-label="View Velar couture website">
+          <div class="project-visual"><img src="assets/velar-preview.png" alt="Velar couture fashion website preview" loading="lazy"><span class="preview-visit">View project <span aria-hidden="true">&rarr;</span></span></div>
+        </a>
+        <div class="project-body"><div class="project-cat">Fashion &middot; E-Commerce Concept</div><h3>Vel&aacute;r</h3><p>A couture fashion experience pairing Lagos craftsmanship with the feel of a Parisian atelier.</p><div class="project-tags"><span>Fashion</span><span>Art Direction</span><span>Responsive Web</span></div><a class="project-card-link" href="../velar.html" target="_blank" rel="noopener noreferrer">View project <span aria-hidden="true">&rarr;</span></a></div>
+      </article>
+      <article class="project-card reveal delay-2">
+        <a class="project-preview-link" href="../motion-demo.html" target="_blank" rel="noopener noreferrer" aria-label="View motion design demo">
+          <div class="project-visual"><img src="assets/motion-demo-preview.png" alt="Motion design demo homepage preview" loading="lazy"><span class="preview-visit">View project <span aria-hidden="true">&rarr;</span></span></div>
+        </a>
+        <div class="project-body"><div class="project-cat">Creative Development &middot; Motion</div><h3>Motion Design Study</h3><p>A scroll-led experiment exploring parallax, reveal transitions and movement across a digital canvas.</p><div class="project-tags"><span>Motion Design</span><span>CSS</span><span>JavaScript</span></div><a class="project-card-link" href="../motion-demo.html" target="_blank" rel="noopener noreferrer">View project <span aria-hidden="true">&rarr;</span></a></div>
+      </article>
     </div>
   </div></section>
 
