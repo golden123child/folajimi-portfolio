@@ -115,8 +115,7 @@ INDEX = '''<!-- ===== HERO ===== -->
     <div class="container two-col">
       <div class="col reveal">
         <div class="portrait-frame">
-          <div class="portrait-art"></div>
-          <div class="portrait-initials">WF</div>
+          <img class="portrait-image" src="../profile.jpg" alt="Wuraola Folajimi" loading="lazy">
           <div class="portrait-badge">
             <span class="avail-dot"></span>
             <div class="small"><strong>Wuraola Folajimi</strong><span style="color:var(--text-muted)">Lagos, Nigeria &middot; Remote Worldwide</span></div>
@@ -223,8 +222,7 @@ ABOUT = '''<header class="page-header" id="top">
     <div class="container two-col">
       <div class="col reveal">
         <div class="portrait-frame">
-          <div class="portrait-art"></div>
-          <div class="portrait-initials">WF</div>
+          <img class="portrait-image" src="../profile.jpg" alt="Wuraola Folajimi" loading="lazy">
           <div class="portrait-badge"><span class="avail-dot"></span><div class="small"><strong>Wuraola Folajimi</strong><span style="color:var(--text-muted)">Full Stack Developer &middot; UI/UX</span></div></div>
         </div>
       </div>
